@@ -1,11 +1,13 @@
-import 'package:flame/components.dart';
-import 'package:flame_tiled/flame_tiled.dart';
-import 'package:flutter_multiplayer/game/game.dart';
-import 'package:flutter_multiplayer/game/platform.dart';
-import 'package:flutter_multiplayer/game/player.dart';
 import 'dart:async';
 
-class Level extends World with HasGameRef<GamePlatform> {
+import 'package:flame/components.dart';
+import 'package:flame/extensions.dart';
+import 'package:flame_tiled/flame_tiled.dart';
+import 'package:flutter_multiplayer/game/platform.dart';
+import 'package:flutter_multiplayer/game/player.dart';
+import 'package:flutter_multiplayer/game/scape_room.dart';
+
+class Level extends World with HasGameRef<ScapeRoom> {
   final String levelName;
   late Player _player;
   late TiledComponent _level;
@@ -19,6 +21,7 @@ class Level extends World with HasGameRef<GamePlatform> {
 
     _spawObjects();
     _addCollisions();
+    _setupCamera();
     
     return super.onLoad();
   }
@@ -33,10 +36,9 @@ class Level extends World with HasGameRef<GamePlatform> {
       switch (obj.class_) {
         case 'Player':
           _player = Player(
-            game.spriteSheet,
             anchor: Anchor.center,
             position: position,
-            size: size
+            size: size,
           );
           add(_player);
           break;
@@ -59,4 +61,29 @@ class Level extends World with HasGameRef<GamePlatform> {
     }
   }
 
+  void _setupCamera() {
+    game.camera = CameraComponent.withFixedResolution(
+      world: this,
+      width: (_level.tileMap.map.width * _level.tileMap.map.tileWidth).toDouble(),
+      height: (_level.tileMap.map.height * _level.tileMap.map.tileHeight).toDouble(),
+    );
+    game.camera.viewfinder.anchor = Anchor.topLeft;
+
+
+    // game.camera = CameraComponent.withFixedResolution(
+    //   world: this,
+    //   width: game.fixedResolution.x,
+    //   height: game.fixedResolution.y,
+    // );
+    // camera.viewfinder.position = fixedResolution / 2;
+    // game.camera.follow(_player, maxSpeed: 200);
+    // game.camera.setBounds(
+    //   Rectangle.fromLTRB(
+    //     game.fixedResolution.x / 2,
+    //     game.fixedResolution.y / 2,
+    //     _level.width - game.fixedResolution.x / 2,
+    //     _level.height - game.fixedResolution.y / 2,
+    //   ),
+    // );
+  }
 }

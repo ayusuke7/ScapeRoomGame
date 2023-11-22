@@ -1,8 +1,11 @@
+import 'package:flame/camera.dart';
 import 'package:flame/collisions.dart';
 import 'package:flame/components.dart';
+import 'package:flame/experimental.dart';
 import 'package:flame/image_composition.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_multiplayer/game/platform.dart';
+import 'package:flutter_multiplayer/main.dart';
 
 
 class Player extends SpriteComponent with CollisionCallbacks, KeyboardHandler {
@@ -18,8 +21,7 @@ class Player extends SpriteComponent with CollisionCallbacks, KeyboardHandler {
   final Vector2 _up = Vector2(0, -1);
   final Vector2 _velocity = Vector2.zero();
 
-  Player(
-    Image image, {
+  Player({
     Vector2? position,
     Vector2? size,
     Vector2? scale,
@@ -27,7 +29,7 @@ class Player extends SpriteComponent with CollisionCallbacks, KeyboardHandler {
     Anchor? anchor,
     int? priority,
   }) : super.fromImage(
-      image,
+      game.images.fromCache('spritesheet.png'),
       srcPosition: Vector2.zero(),
       srcSize: Vector2.all(32),
       position: position,
@@ -35,7 +37,7 @@ class Player extends SpriteComponent with CollisionCallbacks, KeyboardHandler {
       scale: scale,
       angle: angle,
       anchor: anchor,
-      priority: priority,
+      priority: priority
   );
 
    @override
@@ -57,7 +59,6 @@ class Player extends SpriteComponent with CollisionCallbacks, KeyboardHandler {
     }
 
     _velocity.y = _velocity.y.clamp(-_jumpSpeed, 300);
-
 
     // Flip player if needed.
     if (_hAxisInput < 0 && scale.x > 0) {
